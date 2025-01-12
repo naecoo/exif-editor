@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 )
 
 // App struct
@@ -27,16 +26,45 @@ func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
 }
 
-func (a *App) GetGPSExif(path string) string {
-	handler := NewExifHandler(path)
-	gpsInfo, err := handler.GetGPSInfo()
-	if err != nil {
-		log.Fatalf("无法读取 GPS 信息: %v", err)
-	}
-	return gpsInfo
+type GetExifParams struct {
+	ImagePath string `json:"image_path"`
+}
+type GetExifResponse struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Altitude  float64 `json:"altitude"`
+	Error     string  `json:"error"`
 }
 
-func (a *App) SetGPSExif(path string, latitude, longitude float64) error {
-	handler := NewExifHandler(path)
-	return handler.SetGPSInfo(latitude, longitude)
+func (a *App) GetGPSExif(params GetExifParams) GetExifResponse {
+	handler := NewExifHandler(params.ImagePath)
+	gpsInfo, err := handler.GetGPSInfo()
+	if err != nil {
+		return GetExifResponse{Error: err.Error()}
+	} else {
+		return GetExifResponse{
+			Latitude:  gpsInfo.Latitude,
+			Longitude: gpsInfo.Longitude,
+			Altitude:  gpsInfo.Altitude,
+		}
+	}
+}
+
+type SetExifParams struct {
+	ImagePath string  `json:"image_path"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+type SetExifResponse struct {
+	Error string `json:"error"`
+}
+
+func (a *App) SetGPSExif(params SetExifParams) SetExifResponse {
+	handler := NewExifHandler(params.ImagePath)
+	err := handler.SetGPSInfo(params.Latitude, params.Latitude)
+	if err != nil {
+		return SetExifResponse{Error: err.Error()}
+	} else {
+		return SetExifResponse{}
+	}
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -29,23 +28,23 @@ type GPSInfo struct {
 }
 
 // GetGPSInfo 读取图像的 GPS 信息并以 JSON 形式返回
-func (h *ExifHandler) GetGPSInfo() (string, error) {
+func (h *ExifHandler) GetGPSInfo() (*GPSInfo, error) {
 	// 读取图像文件
 	data, err := os.ReadFile(h.ImagePath)
 	if err != nil {
-		return "", fmt.Errorf("无法读取图像文件: %v", err)
+		return nil, fmt.Errorf("无法读取图像文件: %v", err)
 	}
 
 	// 解析 EXIF 数据
 	rawExif, err := exif.SearchAndExtractExif(data)
 	if err != nil {
-		return "", fmt.Errorf("无法解析 EXIF 数据: %v", err)
+		return nil, fmt.Errorf("无法解析 EXIF 数据: %v", err)
 	}
 
 	// 获取 EXIF 标签
 	tags, _, err := exif.GetFlatExifData(rawExif, nil)
 	if err != nil {
-		return "", fmt.Errorf("无法获取 EXIF 标签: %v", err)
+		return nil, fmt.Errorf("无法获取 EXIF 标签: %v", err)
 	}
 
 	// 解析 GPS 信息
@@ -55,32 +54,34 @@ func (h *ExifHandler) GetGPSInfo() (string, error) {
 		case "GPSLatitude":
 			gpsInfo.Latitude, err = parseGPSCoordinate(tag.Formatted)
 			if err != nil {
-				return "", fmt.Errorf("无法解析纬度: %v", err)
+				return nil, fmt.Errorf("无法解析纬度: %v", err)
 			}
 		case "GPSLongitude":
 			gpsInfo.Longitude, err = parseGPSCoordinate(tag.Formatted)
 			if err != nil {
-				return "", fmt.Errorf("无法解析经度: %v", err)
+				return nil, fmt.Errorf("无法解析经度: %v", err)
 			}
 		case "GPSAltitude":
 			gpsInfo.Altitude, err = parseGPSAltitude(tag.Formatted)
 			if err != nil {
-				return "", fmt.Errorf("无法解析海拔: %v", err)
+				return nil, fmt.Errorf("无法解析海拔: %v", err)
 			}
 		}
 	}
 
-	// 将 GPS 信息转换为 JSON
-	jsonData, err := json.Marshal(gpsInfo)
-	if err != nil {
-		return "", fmt.Errorf("无法生成 JSON: %v", err)
-	}
+	return &gpsInfo, nil
 
-	return string(jsonData), nil
+	// 将 GPS 信息转换为 JSON
+	// jsonData, err := json.Marshal(gpsInfo)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("无法生成 JSON: %v", err)
+	// }
+
+	// return string(jsonData), nil
 }
 
 // SetGPSInfo 修改图像的 GPS 信息（经纬度）
-func (h *ExifHandler) SetGPSInfo(latitude, longitude float64) error {
+func (h *ExifHandler) SetGPSInfo(latitude float64, longitude float64) error {
 	// 读取图像文件
 	data, err := os.ReadFile(h.ImagePath)
 	if err != nil {
@@ -110,6 +111,7 @@ func (h *ExifHandler) SetGPSInfo(latitude, longitude float64) error {
 	}
 
 	// 将修改后的 EXIF 数据写回图像
+	// FIXME: bug
 	if err := writeExifData(h.ImagePath, rawExif); err != nil {
 		return fmt.Errorf("无法写回 EXIF 数据: %v", err)
 	}

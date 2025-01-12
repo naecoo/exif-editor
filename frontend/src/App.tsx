@@ -1,52 +1,46 @@
-import { useEffect, useState } from "react";
-import logo from "./assets/images/logo-universal.png";
-import "./App.css";
-import { useGreet } from "./services";
+import { useState } from "react";
+import { GetGPSExif, SetGPSExif } from "../wailsjs/go/main/App";
+import { main } from "../wailsjs/go/models";
 
 function App() {
-  const [resultText, setResultText] = useState(
-    "Please enter your name below 👇"
-  );
+  const [output, setOutput] = useState("");
 
-  const [name, setName] = useState("");
-  const updateName = (e: any) => setName(e.target.value);
+  const onClick = () => {
+    GetGPSExif(
+      new main.GetExifParams({
+        image_path:
+          "/Users/oceanpeng/Desktop/code/wails-app/examples/image.jpg",
+      })
+    )
+      .then((data) => {
+        setOutput(() => JSON.stringify(data));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
-  const { data, loading, run } = useGreet();
-  function greet() {
-    run(name);
-  }
-
-  useEffect(() => {
-    if (data) {
-      setResultText(data);
-    }
-  }, [data]);
+    // GetGPSExif(
+    //   new main.SetExifParams({
+    //     image_path:
+    //       "/Users/oceanpeng/Desktop/code/wails-app/examples/image.jpg",
+    //     latitude: 1.1,
+    //     longitude: 1.1,
+    //   })
+    // )
+    //   .then((data) => {
+    //     console.log("set", data);
+    //   })
+    //   .catch((err) => {
+    //     console.log("set", err);
+    //   });
+  };
 
   return (
     <div id="App">
-      <img src={logo} id="logo" alt="logo" />
-
-      <div id="input" className="input-box">
-        <input
-          id="name"
-          className="input"
-          onChange={updateName}
-          autoComplete="off"
-          name="input"
-          type="text"
-        />
-        <button className="btn" onClick={greet}>
-          Greet
-        </button>
-      </div>
-
-      {loading ? (
-        <div className="loading">Loading...</div>
-      ) : (
-        <div id="result" className="result">
-          {resultText}
-        </div>
-      )}
+      <button className="mt-4" onClick={onClick}>
+        Greet
+      </button>
+      <div>{output}</div>
     </div>
   );
 }
