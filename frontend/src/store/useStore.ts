@@ -1,6 +1,5 @@
 import { create } from 'zustand'
-import { GetGPSExif, SetGPSExif } from "../../wailsjs/go/main/App"
-import { main } from "../../wailsjs/go/models"
+import { getGPSExif, setGPSExif } from '../service'
 
 interface AlertState {
   show: boolean
@@ -42,7 +41,7 @@ export const useStore = create<ExifState>((set, get) => ({
   
   loadExifData: async (filePath) => {
     try {
-      const data = await GetGPSExif(new main.GetExifParams({ image_path: filePath }))
+      const data = await getGPSExif();
       if (data.error) {
         throw new Error(data.error)
       }
@@ -65,11 +64,7 @@ export const useStore = create<ExifState>((set, get) => ({
     const { selectedFile, selectedLocation } = get()
     if (!selectedFile || !selectedLocation) return
     try {
-      const data = await SetGPSExif(new main.SetExifParams({
-        image_path: selectedFile,
-        latitude: selectedLocation[0],
-        longitude: selectedLocation[1],
-      }))
+      const data = await setGPSExif();
       if (data.error) {
         throw new Error(data.error)
       }

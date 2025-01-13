@@ -12,9 +12,12 @@ function App() {
     <>
       <div className="h-screen flex">
         <FileUploader />
-        <MapView />
+        
+        {/* <MapView /> */}
+        
         <ExifPreview />
       </div>
+      
       <Alert
         show={alert.show}
         onClose={hideAlert}
