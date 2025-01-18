@@ -1,37 +1,37 @@
-import { useEffect, useState } from "react"
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet"
-import { Icon } from "leaflet"
-import { MapPinIcon } from "@heroicons/react/24/outline"
-import { useStore } from "../store/useStore"
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { Icon } from "leaflet";
+import { MapPinIcon } from "@heroicons/react/24/outline";
+import { useStore } from "../store/useStore";
 
 const defaultIcon = new Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
-})
+});
 
 function MapEvents() {
-  const setSelectedLocation = useStore(state => state.setSelectedLocation)
-  
+  const setSelectedLocation = useStore((state) => state.setSelectedLocation);
+
   useMapEvents({
     click(e) {
-      setSelectedLocation([e.latlng.lat, e.latlng.lng])
+      setSelectedLocation([e.latlng.lat, e.latlng.lng]);
     },
-  })
-  return null
+  });
+  return null;
 }
 
 export function MapView() {
-  const [isClient, setIsClient] = useState(false)
-  const selectedLocation = useStore(state => state.selectedLocation)
-  const saveGPSLocation = useStore(state => state.saveGPSLocation)
-  const defaultCenter: [number, number] = [22.396428, 114.109497]
+  const [isClient, setIsClient] = useState(false);
+  const selectedLocation = useStore((state) => state.selectedLocation);
+  const saveGPSLocation = useStore((state) => state.saveGPSLocation);
+  const defaultCenter: [number, number] = [22.396428, 114.109497];
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
 
-  if (!isClient) return null
+  if (!isClient) return null;
 
   return (
     <div className="w-1/2 p-4 relative">
@@ -63,5 +63,5 @@ export function MapView() {
         </button>
       )}
     </div>
-  )
+  );
 }
