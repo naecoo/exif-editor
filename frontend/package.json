@@ -11,13 +11,11 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
-    "@types/leaflet": "^1.9.16",
+    "google-map-react": "^2.2.1",
     "install": "^0.13.0",
-    "leaflet": "^1.9.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.3.5",
-    "react-leaflet": "^5.0.0",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

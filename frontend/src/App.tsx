@@ -4,7 +4,6 @@ import { ImagePreview } from "./components/ImagePreview"
 import { ExifPreview } from "./components/ExifPreview"
 import { Alert } from "./components/Alert"
 import { useStore } from "./store/useStore"
-import "leaflet/dist/leaflet.css"
 import "./styles/theme.css"
 
 function App() {

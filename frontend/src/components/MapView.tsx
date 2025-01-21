@@ -1,57 +1,32 @@
-import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import { Icon } from "leaflet";
-import { useStore } from "../store/useStore";
+// @ts-ignore
+import GoogleMapReact from "google-map-react";
 
-const defaultIcon = new Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-
-function MapEvents() {
-  const setSelectedLocation = useStore((state) => state.setSelectedLocation);
-
-  useMapEvents({
-    click(e) {
-      setSelectedLocation([e.latlng.lat, e.latlng.lng]);
-    },
-  });
-  return null;
-}
+const AnyReactComponent = ({ text }: any) => <div>{text}</div>;
 
 export function MapView() {
-  const [isClient, setIsClient] = useState(false);
-  const selectedLocation = useStore((state) => state.selectedLocation);
-  const saveGPSLocation = useStore((state) => state.saveGPSLocation);
-  const defaultCenter: [number, number] = [22.396428, 114.109497];
+  const defaultProps = {
+    center: {
+      lat: 39.916668,
+      lng: 116.383331,
+    },
+    zoom: 11,
+  };
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return null;
-  }
+  const onChildClick = (e: any) => {
+    console.log(e);
+  };
 
   return (
-    <div className="h-1/2">
-      <div className="h-full">
-        <MapContainer
-          center={selectedLocation || defaultCenter}
-          zoom={13}
-          style={{ height: "100%", width: "100%" }}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {/* <MapEvents />
-          {selectedLocation && (
-            <Marker position={selectedLocation} icon={defaultIcon} />
-          )} */}
-        </MapContainer>
-      </div>
+    // Important! Always set the container height explicitly
+    <div style={{ height: "50vh", width: "100%" }}>
+      <GoogleMapReact
+        bootstrapURLKeys={{ key: "" }}
+        defaultCenter={defaultProps.center}
+        defaultZoom={defaultProps.zoom}
+        onChildClick={onChildClick}
+      >
+        <AnyReactComponent lat={59.955413} lng={30.337844} text="My Marker" />
+      </GoogleMapReact>
     </div>
   );
 }
